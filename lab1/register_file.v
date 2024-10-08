@@ -57,7 +57,7 @@ end
  * address가 업데이트 되었을 때 output register에 비동기 업데이트
  */
 always @(addr_a_i or addr_b_i) begin
-    //demultiplexer로 합성되면 좋겠음
+    //multiplexer로 합성되면 좋겠음
     case (addr_a_i[2:0])
         0: data_a_o = reg0_r;
         1: data_a_o = reg1_r;
