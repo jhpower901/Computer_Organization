@@ -25,7 +25,16 @@ cla16
 		.sum_o(cla_sum_w)
 	);
 
-/* TODO: Please write down codes for flags_o[4], ..., [0] */
+/* TODO: Please write down codes for flags_o[4], ..., [0]
+ * [4:0] flags_o = {F, L, C, N, Z} in order
+ * F flag : overflow / underflow @ signed ADD/ SUB
+ * L flag : B<A @ unsigned CMP -> cla16에서 B-A < 0
+ * 
+ * C flag : overflow / underflow @unsigned ADD/SUB
+ * N flag : B<A @ signed CMP -> 결과가 음수일 때
+ * Z flag : A==B @ CMP -> sum이 0일 때
+ */
+assign flags_o = {alu_ovf_w[1], alu_ovf_w[0], alu_ovf_w[0], alu_ovf_w[1] | cla_sum_w[15], (~|cla_sum_w) & |alu_ovf_w};
 
 always @(*) begin
 	CARRYIN_w = 1'b0;

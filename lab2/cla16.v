@@ -16,14 +16,15 @@ module cla16
     output [15:0]   sum_o
 );
 
-wire [15:0]     A_used_w;
-wire [15:0]     prop_w;
-wire [15:0]     gen_w;
+wire [15:0]     A_used_w;   //B-A를 위해 A*(singed)
+wire [15:0]     prop_w;     //피연산자1, 2 half sum
+wire [15:0]     gen_w;      //피연산자1, 2 half carry out
 wire [15:0]     carry_w;
 wire [3:0]      gprop_w;  // group-propagate
 wire [3:0]      ggen_w;   // group-generate
 wire [3:0]      gcarry_w; // group-carry
 
+//carry in에 1이 들어왔을 시 B-A연산 실행, 반전 후 cla4_0 모듈의 carry_i포트 1 전달
 assign A_used_w = (CARRYIN_i == 1'b0) ? A_i : ~A_i;
       
 assign prop_w = A_used_w ^ B_i;
@@ -80,8 +81,16 @@ lcu4
 assign sum_o[0] = CARRYIN_i ^ prop_w[0];
 assign sum_o[15:1] = carry_w[14:0] ^ prop_w[15:1];
 
-/* TODO: please write down code for flag_overflow[0] and [1] */
+/* TODO: please write down code for flag_overflow[0] and [1] 
+ * [0] (C-flag): overflow that is meaningful for unsigned operations
+ * ADD에서 carry out == 1일 때 overflow
+ * SUB에서 singed_bit == 1 & carry out == 0 일 때 overflow
+ * MSB까지 이용하여 표현된 unsigned operand의 경우 MSB가 1인 경우에도 carry out이 1이라면 overflow 아니다.
+ * [1] (F-flag): overflow that is meaningful for signed operations (2s complement)
+**/
 
+assign flag_overflow_o = {carry_w[14] ^ gcarry_w[3],
+                        ~CARRYIN_i & gcarry_w[3] | CARRYIN_i & sum_o[15] & ~gcarry_w[3]};
 assign CARRYOUT_no = !gcarry_w[3];
 
 endmodule

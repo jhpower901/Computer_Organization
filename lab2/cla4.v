@@ -1,7 +1,7 @@
 module cla4
 (
-    input [3:0] a_i,
-    input [3:0] b_i,
+    input [3:0] a_i,        //B+A propagate
+    input [3:0] b_i,        //B+A generate
     input       carry_i,
 
     output       prop_o,    // group-propagate to LCU

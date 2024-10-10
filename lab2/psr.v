@@ -20,6 +20,12 @@ always @(posedge rst_i or posedge clk_i) begin
         flags_o <= 0;
     else begin
         /* TODO: write down codes for propagating flags */
+        case (alu_sel_i)
+            ALU_SEL_ADD: {flags_o[4], flags_o[2]} = {flags_i[4], flags_i[2]};
+            ALU_SEL_SUB: {flags_o[4], flags_o[2]} = {flags_i[4], flags_i[2]};
+            ALU_SEL_CMP: {flags_o[3], flags_o[1], flags_o[0]} = {flags_i[3], flags_i[1], flags_i[0]};
+            default:;
+        endcase
     end
 end
 
