@@ -39,9 +39,9 @@ cla16
 
 /* TODO: please write down logic for curr_addr_imem */
 always@(posedge clk_i or posedge rst_i) begin
-    if (rst_i) curr_addr_imem_r = 0;
-    else if (jump_i) curr_addr_imem_r = jump_tgt_i;
-    else curr_addr_imem_r = next_addr_imem_w;
+    if (rst_i) curr_addr_imem_r <= 0;
+    else if (jump_i) curr_addr_imem_r <= jump_tgt_i;
+    else curr_addr_imem_r <= next_addr_imem_w;
 end
 
 endmodule

@@ -134,7 +134,97 @@ tristate_buf16
         .Dout(RF_DATA_IN)
     );
 
-/* TODO: Please wire all components: shifter, RF, PSR, PC, IR, ALU, decoder */
+`include "../lab1/register_file.v"
+`include "..lab2/ALU_modes.vh"
+`include "..lab2/alu.v"
+`include "..lab2/cla4.v"
+`include "..lab2/cla16.v"
+`include "..lab2/lcu4.v"
+`include "..lab2/psr.v"
+`include "..lab2/shifter.v"
+`include "..lab3/decoder.v"
+`include "..lab3/instruction_reg.v"
+`include "..lab3/opcodes.vh"
+`include "..lab3/pc.v"
 
+/* TODO: Please wire all components: shifter, RF, PSR, PC, IR, ALU, decoder */
+shifter u_shift(
+    .data_i(data_i),
+    .rl_shift_amt_i(rl_shift_amt),
+    .lui_i(lui),
+
+    .data_o(data_o)
+);
+
+register_file u_rf(
+    .rst_i(RESET),
+    .clk_i(CLK),
+    .wr_i(wr),
+    .data_i(wdata_w),
+    .addr_a_i(addrA),
+    .addr_b_i(addrB),
+
+    .data_a_o(dout_a_w),
+    .data_b_o(dout_b_w)
+);
+
+alu u_alu(
+    .A_i(data_a),
+    .B_i(data_b),
+    .alu_sel_i(alu_sel),
+
+    .flags_o(flags_w),
+    .alu_o(alu_w)
+);
+
+psr u_psr(
+    .rst_i(RESET),
+    .clk_i(CLK),
+    .alu_sel_i(alu_sel),
+    .flags_i(flags_w),
+
+    .flags_o(flags_o)
+);
+
+pc u_pc(
+    .rst_i(RESET),
+    .clk_i(CLK),
+    .jump_i(jmp),
+    .branch_i(br),
+    .displacement_i(disp_w),
+    .jump_tgt_i(jmp_tgt),
+
+    .addr_imem_o(inst_ptr)
+);
+
+instruction_reg u_ir(
+    .rst_i(RESET),
+    .clk_i(CLK),
+    .jump_i(jmp),
+    .branch_i(br),
+    .inst_i(inst_i),
+
+    .inst_o(inst_w),
+    .imm_o(imm_w),
+    .displacement_o(disp_w),
+    .addr_a_o(addrA),
+    .addr_b_o(addrB)
+);
+
+decoder u_id(
+    .inst_i(inst_w),
+    .psr_flags_i(psr_flags),
+
+    .TRI_SEL(),
+    .ALU_SEL(),
+    .WR(),
+    .JMP(jmp),
+    .BR(br),
+    .MUX_SEL0(),
+    .MUX_SEL1(),
+    .SHIFT_IMM(),
+    .LUI(),
+    .WE()
+);
 endmodule
 

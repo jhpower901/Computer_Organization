@@ -75,7 +75,7 @@ initial begin
     inst_i <= 16'h44C3; //JLT r3 (assume jmp_tgt has been stored in r3)
 
     @(posedge clk);
-    inst_i <= 16'h40C3; //JEQ r3 
+    inst_i <= 16'h40C3; //JEQ r3    0100 0000 1100 0011 (-61)
 
     @(posedge clk);
     inst_i <= 16'h0316; // AND r3 r6

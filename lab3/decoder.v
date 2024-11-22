@@ -38,9 +38,10 @@ assign opcode_ex = inst_i[7:4];
 assign Rsrc = inst_i[3:0];
 
 function Jcond_Bcond_table;
-    input [4:0] psr_flags_i;
+    input [3:0] Rdest;
+    input [4:0] psr_flags_i;    //FLCNZ
     begin
-        case (psr_flags_i)
+        case (Rdest)
             4'b0000: Jcond_Bcond_table = psr_flags_i[0];
             4'b0001: Jcond_Bcond_table = ~psr_flags_i[0];
             4'b1101: Jcond_Bcond_table = psr_flags_i[1] | psr_flags_i[0];
@@ -107,9 +108,10 @@ always @(*) begin
     ////////////////////////////////////////////////////////////////////////////
     JMP = 1'b0;   // default value
     /* TODO: write logic for JMP, you need to consider JAL and Jcond */
-    if ( (opcode == JAL_OPex) || (opcode == Jcond_OPex) )
+    if ( (opcode == MEM_OP) && (opcode_ex == JAL_OPex) ||
+         (opcode == MEM_OP) && (opcode_ex == Jcond_OPex) )
     begin
-        JMP = Jcond_Bcond_table(psr_flags_i);
+        JMP = Jcond_Bcond_table(Rdest, psr_flags_i);
     end
 
     ////////////////////////////////////////////////////////////////////////////
@@ -119,7 +121,7 @@ always @(*) begin
     /* TODO: write logic for JMP, you need to consider JAL and Jcond */
     if ( (opcode == Bcond_OP) )
     begin
-        BR = Jcond_Bcond_table(psr_flags_i);
+        BR = Jcond_Bcond_table(Rdest, psr_flags_i);
     end
 
     ////////////////////////////////////////////////////////////////////////////
