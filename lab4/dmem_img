@@ -1,22 +1,21 @@
-ANDI  $r0 8'b0 //r0 = 0
-ANDI  $r1 8'b0 //r1 = 0
-ANDI  $r2 8'b0 //r2 = 0
-ANDI  $r3 8'b0 //r3 = 0
-ANDI  $r4 8'b0 //r4 = 0
-ANDI  $r5 8'b0 //r5 = 0
-ANDI  $r6 8'b0 //r6 = 0
-ANDI  $r7 8'b0 //r7 = 0
-SUBI  $r0 8'b1 //r0 = 16'hFFFF
-LUI   $r1 8'b1  //r1 = 16'h100 = 256
-LUI   $r2 8'b1  //r2 = 16'h100 = 256
-ORI   $r2 8'hff //r2 = 8'hff
-MOVI  $r3 8'b0001_0010  //r3 = 8'b0001_0010
-MOVI  $r4 8'b1111       //r4 = 8'b1111
-MOV   $r5 $r1   //r5 = r1 = 256
-CMP   $r2 $r1   //8'hff == 16'h100, PSR=xxxx0
-Jcond NEQ 0xA3  //JUMP to 0xA3
-
-MOV   $r1 $r5    //r1 = r5 = 256
-STORE $r0 $r1  //(0xFFFF) <- 256
-ADDI  $r1 8'b1 //r1 = 1
-Jcond JMP 0xA4 //just JUMP to 0xA4
+ANDI  $r0 8'b0 		//r0 = 0
+ANDI  $r1 8'b0 		//r1 = 0
+ANDI  $r2 8'b0 		//r2 = 0
+ANDI  $r3 8'b0 		//r3 = 0
+ANDI  $r4 8'b0 		//r4 = 0
+ANDI  $r5 8'b0 		//r5 = 0
+ANDI  $r6 8'b0 		//r6 = 0
+ANDI  $r7 8'b0 		//r7 = 0
+SUBI  $r0 8'b1 		//r0 = 16'hFFFF
+LUI   $r1 8'b1  	//r1 = 8’b1 << 8 = 16'h100 = 256
+LUI   $r2 8'b1  	//r2 = 8’b1 << 8 = 16'h100 = 256
+ORI   $r2 8'hFF		//r2 = (16'h100 | 16’hFFFF) = 16'hFFFF
+MOVI  $r3 8'h12		//r3 = 16’h12
+MOVI  $r4 8'h0F     //r4 = 16’h0F
+MOV   $r5 $r1   	//r5 = r1 = 16'h100 = 256
+CMP   $r2 $r1       //r2==r1(16'hFFFF==16'h100), PSR=xxxx0
+(Jcond) NEQ $r3  	//JUMP to 0x0012  (10)18
+MOV   $r1 $r5    	//r1 = r5 = 16'h100 = 256
+STORE $r0 $r1  		//r0<-$r1 (0xFFFF) <- 6'h100 = 256
+ADDI  $r1 8'h01		//r1 = 16'h100+16’h001 = 16’h101
+(Jcond) JMP $r4 	//just JUMP to 0x000F
