@@ -135,96 +135,87 @@ tristate_buf16
     );
 
 `include "../lab1/register_file.v"
-`include "..lab2/ALU_modes.vh"
-`include "..lab2/alu.v"
-`include "..lab2/cla4.v"
-`include "..lab2/cla16.v"
-`include "..lab2/lcu4.v"
-`include "..lab2/psr.v"
-`include "..lab2/shifter.v"
-`include "..lab3/decoder.v"
-`include "..lab3/instruction_reg.v"
-`include "..lab3/opcodes.vh"
-`include "..lab3/pc.v"
+`include "../lab2/ALU_modes.vh"
+`include "../lab2/alu.v"
+`include "../lab2/psr.v"
+`include "../lab2/shifter.v"
+`include "../lab3/decoder.v"
+`include "../lab3/instruction_reg.v"
+`include "../lab3/opcodes.vh"
+`include "../lab3/pc.v"
 
 /* TODO: Please wire all components: shifter, RF, PSR, PC, IR, ALU, decoder */
 shifter u_shift(
-    .data_i(data_i),
-    .rl_shift_amt_i(rl_shift_amt),
-    .lui_i(lui),
-
-    .data_o(data_o)
+    .data_i(MUX1_OUT),          //shift in data 16bit
+    .rl_shift_amt_i(MUX2_OUT),  //amount 4bit
+    .lui_i(LUI),
+    .data_o(TRI_BUF0_IN)
 );
 
 register_file u_rf(
     .rst_i(RESET),
     .clk_i(CLK),
-    .wr_i(wr),
-    .data_i(wdata_w),
-    .addr_a_i(addrA),
-    .addr_b_i(addrB),
-
-    .data_a_o(dout_a_w),
-    .data_b_o(dout_b_w)
+    .wr_i(WR),
+    .data_i(RF_DATA_IN),
+    .addr_a_i(ADDR_A),
+    .addr_b_i(ADDR_B),
+    .data_a_o(SRC),
+    .data_b_o(DEST)
 );
 
 alu u_alu(
-    .A_i(data_a),
-    .B_i(data_b),
-    .alu_sel_i(alu_sel),
-
-    .flags_o(flags_w),
-    .alu_o(alu_w)
+    .A_i(MUX0_OUT),
+    .B_i(DEST),
+    .alu_sel_i(ALU_SEL),
+    .flags_o(PSR_FLCNZ_IN),
+    .alu_o(TRI_BUF1_IN)
 );
 
 psr u_psr(
     .rst_i(RESET),
     .clk_i(CLK),
-    .alu_sel_i(alu_sel),
-    .flags_i(flags_w),
-
-    .flags_o(flags_o)
+    .alu_sel_i(ALU_SEL),
+    .flags_i(PSR_FLCNZ_IN),
+    .flags_o(PSR_FLCNZ_OUT)
 );
 
 pc u_pc(
     .rst_i(RESET),
     .clk_i(CLK),
-    .jump_i(jmp),
-    .branch_i(br),
-    .displacement_i(disp_w),
-    .jump_tgt_i(jmp_tgt),
-
-    .addr_imem_o(inst_ptr)
+    .jump_i(JMP),
+    .branch_i(BR),
+    .displacement_i(DISP),
+    .jump_tgt_i(SRC),
+    .addr_imem_o(PC_OUT)
 );
 
 instruction_reg u_ir(
     .rst_i(RESET),
     .clk_i(CLK),
-    .jump_i(jmp),
-    .branch_i(br),
-    .inst_i(inst_i),
-
-    .inst_o(inst_w),
-    .imm_o(imm_w),
-    .displacement_o(disp_w),
-    .addr_a_o(addrA),
-    .addr_b_o(addrB)
+    .jump_i(JMP),
+    .branch_i(BR),
+    .inst_i(IMEM_DATA),
+    .inst_o(INST_REG_OUT),
+    .imm_o(IMM),
+    .displacement_o(DISP),
+    .addr_a_o(ADDR_A),
+    .addr_b_o(ADDR_B)
 );
 
 decoder u_id(
-    .inst_i(inst_w),
-    .psr_flags_i(psr_flags),
-
-    .TRI_SEL(),
-    .ALU_SEL(),
-    .WR(),
-    .JMP(jmp),
-    .BR(br),
-    .MUX_SEL0(),
-    .MUX_SEL1(),
-    .SHIFT_IMM(),
-    .LUI(),
-    .WE()
+    .inst_i(INST_REG_OUT),
+    .psr_flags_i(PSR_FLCNZ_OUT),
+    .TRI_SEL(TRI_SEL),
+    .ALU_SEL(ALU_SEL),
+    .WR(WR),
+    .JMP(JMP),
+    .BR(BR),
+    .IMM_EX_SEL(IMM_EX_SEL),
+    .MUX_SEL0(MUX_SEL0),        //Data input control of ALU
+    .MUX_SEL1(MUX_SEL1),        //Data input control of Shifter
+    .SHIFT_IMM(SHIFT_IMM),      //Data input control of Shifter
+    .LUI(LUI),
+    .WE(WE)
 );
 endmodule
 

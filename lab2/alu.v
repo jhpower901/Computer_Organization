@@ -34,7 +34,7 @@ cla16
  * N flag : B<A @ signed CMP -> 결과가 음수일 때
  * Z flag : A==B @ CMP -> sum이 0일 때
  */
-assign flags_o = {alu_ovf_w[1], alu_ovf_w[0], alu_ovf_w[0], alu_ovf_w[1] | cla_sum_w[15], (~|cla_sum_w) & |alu_ovf_w};
+assign flags_o = {alu_ovf_w[1], alu_ovf_w[0], alu_ovf_w[0], alu_ovf_w[1] | cla_sum_w[15], (~|cla_sum_w) & ~|alu_ovf_w};
 
 always @(*) begin
 	CARRYIN_w = 1'b0;
